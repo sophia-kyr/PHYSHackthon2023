@@ -4,8 +4,12 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.lang.Math;
+//import java.lang.Math.atan();
 
-public class charPanel extends JPanel implements ActionListener{
+
+
+public class charPanel extends JPanel implements ActionListener {
 
     final int PANEL_WIDTH = 500;
     final int PANEL_HEIGHT = 500;
@@ -29,11 +33,17 @@ public class charPanel extends JPanel implements ActionListener{
     double angle = 1;
     boolean ccw = false;
     Timer timerV;
+    double velocity = -2;
 
-    charPanel(){
-        this.setPreferredSize(new Dimension(PANEL_WIDTH,PANEL_HEIGHT));
+    double dist;
+    double theta;
+
+    boolean orbit = false;
+
+    charPanel() {
+        this.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         this.setBackground(Color.black);
-        this.setBounds(0,0, 400, 500);
+        this.setBounds(0, 0, 400, 500);
         //this.addKeyListener(this);
 
 
@@ -46,8 +56,8 @@ public class charPanel extends JPanel implements ActionListener{
         pointer = new ImageIcon("arrow2.png").getImage();
         pointer = pointer.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
 
-        timerLaunch = new Timer(10, this);
-        timerV = new Timer(10,this);
+        //timerLaunch = new Timer(10, this);
+        timerV = new Timer(10, this);
         this.add(launch);
 
     }
@@ -71,64 +81,72 @@ public class charPanel extends JPanel implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
 //ORBIT
+        dist = Math.sqrt(Math.pow((mx - x), 2) + Math.pow((my - y), 2));
+         //if (velocity <= 100 / (Math.sqrt(dist))) {
+       // if(dist == 200){
+        double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1 / 3);
+        if(this.y < 100){
 
-//        mr = Math.sqrt(Math.pow((mx-x),2) + Math.pow((my-y),2));
-//        if(velocity <= 5/(Math.sqrt(mr)){
-//            //orbit
-            //    double a  = Math.pow((Math.pow(mr,2)/Math.pow(velocity,2)), 1/3);
-//        r = mess
-//        this.x = r*Math.cos() - this.x;
-//        this.y = r*Math.sin() - this.y;
-//                
-//
-//        }
+            orbit = true;
 
-        if((this.mx + this.mr) > this.x && this.x > (this.mx - this.mr) && (this.my + this.mr) > this.y && this.y > (this.my - this.mr)){
-
-            this.viX = this.vfX;
-
-            this.viY = this.vfY;
+            double r = Math.pow(a, 2) / (2 * Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(a / 2 * Math.sin(theta), 2)));
+            this.x = r * Math.cos(theta) - mx;
+            this.y = r * Math.sin(theta) - my;
+            theta += velocity;
         }
 
-        //this.viY = 1/ (2*(Math.sqrt(this.x)));
+        if (!orbit) {
 
-        this.x = this.x + this.viX;
+            theta = Math.atan(Math.abs(my - y) / Math.abs(mx - x));
+            if ((this.mx + this.mr) > this.x && this.x > (this.mx - this.mr) && (this.my + this.mr) > this.y && this.y > (this.my - this.mr)) {
 
-        this.y = this.y + this.viY;
+                this.viX = this.vfX;
 
-        if(e.getSource()==launch) {
-            launch.setEnabled(false);
-            launch.setVisible(true);
-            timerLaunch.start();
-            timerV.stop();
-            timerLaunch.start();
+                this.viY = this.vfY;
+            }
 
-            //freeze key events and slider
+//            this.viY = 1 / (2 * (Math.sqrt(this.x)));
+
+            this.x = this.x + this.viX;
+
+            this.y = this.y + this.viY;
+            //   }
+
+
+            if (e.getSource() == launch) {
+                launch.setEnabled(false);
+                launch.setVisible(true);
+                //timerLaunch.start();
+//            timerV.stop();
+//            timerLaunch.start();
+
+                //freeze key events and slider
+            }
+            if (py > 300) {
+                ccw = !ccw;
+            }
+            if (ccw) {
+                angle += 0.8;
+            } else {
+                angle -= 0.8;
+            }
+            this.px = (int) (200 + 50 * Math.cos(angle * Math.PI / 180));
+            this.py = (int) (300 + 50 * Math.sin(angle * Math.PI / 180));
+
+
+
+            //stop motion, end game for when hits frame
+            if (x >= PANEL_WIDTH - user.getWidth(null) || x < 0) {
+
+            }
+            if (y >= PANEL_WIDTH - user.getWidth(null) || y < 0) {
+
+            }
+
+
         }
-        if(py>300) {
-            ccw = !ccw;
-        }
-        if(ccw){
-            angle +=0.8;
-        }
-        else{
-            angle -=0.8;
-        }
-        this.px  = (int) (200 + 50*Math.cos(angle*Math.PI/180));
-        this.py  = (int) (300 + 50*Math.sin(angle*Math.PI/180));
         repaint();
 
 
-        //stop motion, end game for when hits frame
-        if(x>=PANEL_WIDTH-user.getWidth(null) || x<0) {
-
-        }
-        if(y>=PANEL_WIDTH-user.getWidth(null) || y<0) {
-
-        }
-
-
     }
-
-
 }
