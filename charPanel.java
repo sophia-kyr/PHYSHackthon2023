@@ -5,9 +5,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.lang.Math;
-//import java.lang.Math.atan();
-
-
 
 public class charPanel extends JPanel implements ActionListener {
 
@@ -17,7 +14,6 @@ public class charPanel extends JPanel implements ActionListener {
     Image mass;
     Image pointer;
     Timer timerLaunch;
-
     JButton launch;
     double x = 200;
     double y = 300;
@@ -40,6 +36,7 @@ public class charPanel extends JPanel implements ActionListener {
 
     boolean orbit = false;
 
+    int counter = 0;
     charPanel() {
         this.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         this.setBackground(Color.black);
@@ -82,22 +79,26 @@ public class charPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 //ORBIT
         dist = Math.sqrt(Math.pow((mx - x), 2) + Math.pow((my - y), 2));
-         //if (velocity <= 100 / (Math.sqrt(dist))) {
-       // if(dist == 200){
-        double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1 / 3);
-        if(this.y < 100){
+         if (velocity <= 100 / (Math.sqrt(dist))) {
+             // if(dist == 200){
+             double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1 / 3);
+             theta = Math.atan(Math.abs(my - y) / Math.abs(mx - x));
 
-            orbit = true;
+             if (this.y < 150) {
 
-            double r = Math.pow(a, 2) / (2 * Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(a / 2 * Math.sin(theta), 2)));
-            this.x = r * Math.cos(theta) - mx;
-            this.y = r * Math.sin(theta) - my;
-            theta += velocity;
-        }
+                 orbit = true;
+
+                 double r = Math.pow(a, 2) / (2 * Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(a / 2 * Math.sin(theta), 2)));
+                 this.x = dist * Math.cos(theta) - mx;
+                 this.y = dist * Math.sin(theta) - my;
+                 theta += 1;
+                 dist++;
+             }
+         }
 
         if (!orbit) {
 
-            theta = Math.atan(Math.abs(my - y) / Math.abs(mx - x));
+
             if ((this.mx + this.mr) > this.x && this.x > (this.mx - this.mr) && (this.my + this.mr) > this.y && this.y > (this.my - this.mr)) {
 
                 this.viX = this.vfX;
@@ -134,7 +135,7 @@ public class charPanel extends JPanel implements ActionListener {
             this.py = (int) (300 + 50 * Math.sin(angle * Math.PI / 180));
 
 
-
+/*
             //stop motion, end game for when hits frame
             if (x >= PANEL_WIDTH - user.getWidth(null) || x < 0) {
 
@@ -142,11 +143,12 @@ public class charPanel extends JPanel implements ActionListener {
             if (y >= PANEL_WIDTH - user.getWidth(null) || y < 0) {
 
             }
+      */
 
 
         }
         repaint();
-
+        counter ++;
 
     }
 }
