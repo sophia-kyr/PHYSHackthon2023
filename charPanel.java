@@ -6,10 +6,12 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.lang.Math;
 
-public class charPanel extends JPanel implements ActionListener {
+public class charPanel extends JPanel implements ActionListener{
 
-    final int PANEL_WIDTH = 500;
-    final int PANEL_HEIGHT = 500;
+
+
+    final int PANEL_WIDTH = 1000;
+    final int PANEL_HEIGHT = 1000;
     Image user;
     Image mass;
     Image pointer;
@@ -29,29 +31,86 @@ public class charPanel extends JPanel implements ActionListener {
     double angle = 1;
     boolean ccw = false;
     Timer timerV;
-    double velocity = -2;
-
+    double velocity = -4;
+    JLabel label;
+    ImageIcon icon;
     double dist;
     double theta;
 
+    double ESCAPE = 4;
     boolean orbit = false;
 
-    int counter = 0;
+    double distOG;
+    double thetaOG;
+
+
+    //obtains distance between planet and satellite
+
+    public double currentVelocity(double viX, double viY){
+        return Math.sqrt((viX)*(viX)+(viY)*(viY));
+    }
+
+    public double calculateDistance(double planetX, double planetY, double satelliteX, double satelliteY){
+        return Math.sqrt(((planetX - satelliteX)*(planetX - satelliteX)+(planetY-satelliteY)*(planetY-satelliteY)));
+    }
+
+    //obtains escape velocity at current distance from planet
+    public double calculateEscapeVelocity(double escape, double distance){
+        return (escape/Math.sqrt(distance));
+    }
+
+    //calculates angle between satellite and planet, as though planet were origin, going clockwise from the vertical
+    public double calculateAngle(double planetX, double planetY, double satelliteX, double satelliteY){
+        if ((satelliteX >= planetX) && (satelliteY > planetY)){
+            System.out.println("1");
+            return (Math.PI/2) - (Math.atan((satelliteX - planetX)/(satelliteY - planetY)));
+
+        }
+        if ((satelliteX >= planetX) && (satelliteY < planetY)){
+            System.out.println("2");
+            return 2*(Math.PI) - (Math.atan((planetY - satelliteY)/(satelliteX - planetX)));
+        }
+        if ((satelliteX < planetX) && (satelliteY > planetY)){
+            System.out.println("3");
+            return (Math.PI/2) + (Math.atan((planetX - satelliteX)/(satelliteY - planetY)));
+        }
+        if ((satelliteX < planetX) && (satelliteY < planetY)){
+            System.out.println("4");
+            return Math.PI + (Math.atan((planetY - satelliteY)/(planetX - satelliteX)));
+        }
+
+        System.out.println("5");
+        return (Math.PI)/2.0;
+
+
+
+    }
     charPanel() {
+//        this.addKeyListener( this);
+//
+//        Image imIcon = new ImageIcon("arrow2.png").getImage();
+//        imIcon = imIcon.getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+//        icon = new ImageIcon(imIcon);
+//
+//        label = new JLabel();
+//        label.setBounds(260,360,100,100);
+//        label.setIcon(icon);
+//        this.add(label);
+
         this.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         this.setBackground(Color.black);
-        this.setBounds(0, 0, 400, 500);
+        this.setBounds(0, 0, 800, 800);
         //this.addKeyListener(this);
 
 
         launch = new JButton("Launch!");
         launch.addActionListener(this);
-        user = new ImageIcon("pacman-blue-png-10.png").getImage();
-        user = user.getScaledInstance(50, 50, Image.SCALE_DEFAULT);
-        mass = new ImageIcon("pacman-blue-png-10.png").getImage();
-        mass = mass.getScaledInstance(30, 30, Image.SCALE_DEFAULT);
-        pointer = new ImageIcon("arrow2.png").getImage();
-        pointer = pointer.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
+        user = new ImageIcon("ship.png").getImage();
+        user = user.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+        mass = new ImageIcon("planet.png").getImage();
+        mass = mass.getScaledInstance(100, 100, Image.SCALE_DEFAULT);
+//        pointer = new ImageIcon("arrow2.png").getImage();
+//        pointer = pointer.getScaledInstance(10, 10, Image.SCALE_DEFAULT);
 
         //timerLaunch = new Timer(10, this);
         timerV = new Timer(10, this);
@@ -68,37 +127,64 @@ public class charPanel extends JPanel implements ActionListener {
 
         g2D.drawImage(this.user, (int) this.x, (int) this.y, null);
         g2D.drawImage(this.mass, (int) this.mx, (int) this.my, null);
-        g2D.drawImage(this.pointer, this.px, this.py, null);
+        //g2D.drawImage(this.pointer, this.px, this.py, null);
         //timerLaunch.start();
-        timerV.start();
+        //timerV.start();
 
 
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        if(e.getSource() == launch){
+            timerV.start();
+        }
 //ORBIT
         dist = Math.sqrt(Math.pow((mx - x), 2) + Math.pow((my - y), 2));
-         if (velocity <= 100 / (Math.sqrt(dist))) {
-             // if(dist == 200){
-             double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1 / 3);
-             theta = Math.atan(Math.abs(my - y) / Math.abs(mx - x));
+             // if(dist == 200){ double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1 / 3);
 
-             if (this.y < 150) {
 
-                 orbit = true;
 
-                 double r = Math.pow(a, 2) / (2 * Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(a / 2 * Math.sin(theta), 2)));
-                 this.x = dist * Math.cos(theta) - mx;
-                 this.y = dist * Math.sin(theta) - my;
-                 theta += 1;
-                 dist++;
+        if (this.y < 180 || orbit) {
+
+            System.out.println("ThetaOrbit: " + theta);
+
+            orbit = true;
+
+            //double r = Math.pow(a, 2) / (2 * Math.sqrt(Math.pow(a * Math.cos(theta), 2) + Math.pow(a / 2 * Math.sin(theta), 2)));
+            this.x = dist * Math.cos(theta) + mx;
+            this.y = dist * Math.sin(theta) + my;
+
+            double tempVelocity = velocity;
+            velocity = velocity * (distOG/dist);
+
+            if (thetaOG < Math.PI/2){
+                theta -= Math.abs((velocity)/120);
+            }
+            else{
+                theta += Math.abs((velocity)/120);
+            }
+
+            velocity = tempVelocity;
+            repaint();
+
+
              }
-         }
 
         if (!orbit) {
 
+            velocity = MyFrame.Ivelocity;
+            viX = velocity * Math.cos(Math.toRadians(MyFrame.Iangle));
+            viY = (-1) * velocity * Math.sin(Math.toRadians(MyFrame.Iangle));
+//            viX *=  MyFrame.Ivelocity;
+//            viY *= (-1) * MyFrame.Ivelocity;
 
+            theta = calculateAngle(mx, my, this.x, this.y);
+            thetaOG = theta;
+
+            double a = Math.pow((Math.pow(dist, 2) / Math.pow(velocity, 2)), 1/3);
             if ((this.mx + this.mr) > this.x && this.x > (this.mx - this.mr) && (this.my + this.mr) > this.y && this.y > (this.my - this.mr)) {
 
                 this.viX = this.vfX;
@@ -111,8 +197,12 @@ public class charPanel extends JPanel implements ActionListener {
             this.x = this.x + this.viX;
 
             this.y = this.y + this.viY;
+
+            velocity = Math.sqrt((viX)*(viX) + (viY)*(viY));
             //   }
 
+
+            System.out.println("Theta: " + theta);
 
             if (e.getSource() == launch) {
                 launch.setEnabled(false);
@@ -123,17 +213,17 @@ public class charPanel extends JPanel implements ActionListener {
 
                 //freeze key events and slider
             }
-            if (py > 300) {
-                ccw = !ccw;
-            }
-            if (ccw) {
-                angle += 0.8;
-            } else {
-                angle -= 0.8;
-            }
-            this.px = (int) (200 + 50 * Math.cos(angle * Math.PI / 180));
-            this.py = (int) (300 + 50 * Math.sin(angle * Math.PI / 180));
-
+//            if (py > 300) {
+//                ccw = !ccw;
+//            }
+//            if (ccw) {
+//                angle += 0.8;
+//            } else {
+//                angle -= 0.8;
+//            }
+//            this.px = (int) (200 + 50 * Math.cos(angle * Math.PI / 180));
+//            this.py = (int) (300 + 50 * Math.sin(angle * Math.PI / 180));
+//
 
 /*
             //stop motion, end game for when hits frame
@@ -145,10 +235,85 @@ public class charPanel extends JPanel implements ActionListener {
             }
       */
 
-
+            distOG = dist;
         }
         repaint();
-        counter ++;
 
     }
+
+//    @Override
+//    public void keyTyped(KeyEvent e) {
+//
+//        switch(e.getKeyChar()) {
+//            case KeyEvent.VK_LEFT:
+//                angle += 0.8;
+//                break;
+//            case KeyEvent.VK_RIGHT:
+//                angle -= 0.8;
+//                break;
+//        }
+//
+////        if (e.isActionKey() == ) {
+////                angle += 0.8;
+////        } else {
+////                angle -= 0.8;
+////        }
+//        this.px = (int) (200 + 50 * Math.cos(angle * Math.PI / 180));
+//        this.py = (int) (300 + 50 * Math.sin(angle * Math.PI / 180));
+//        repaint();
+//    }
+//
+//    @Override
+//    public void keyPressed(KeyEvent e) {
+//
+//    }
+//
+//    @Override
+//    public void keyReleased(KeyEvent e) {
+//
+//    }
+
+
+//
+//    @Override
+//    public void keyTyped(KeyEvent e) {
+//        switch (e.getKeyChar()) {
+//            case 'a':
+//                label.setLocation(label.getX() - 10, label.getY());
+//                break;
+//            case 'w':
+//                label.setLocation(label.getX(), label.getY() - 10);
+//                break;
+//            case 's':
+//                label.setLocation(label.getX(), label.getY() + 10);
+//                break;
+//            case 'd':
+//                label.setLocation(label.getX() + 10, label.getY());
+//                break;
+//        }
+//
+//    }
+//
+//    @Override
+//    public void keyPressed(KeyEvent e) {
+//        switch (e.getKeyCode()) {
+//            case 37:
+//                label.setLocation(label.getX() - 10, label.getY());
+//                break;
+//            case 38:
+//                label.setLocation(label.getX(), label.getY() - 10);
+//                break;
+//            case 39:
+//                label.setLocation(label.getX() + 10, label.getY());
+//                break;
+//            case 40:
+//                label.setLocation(label.getX(), label.getY() + 10);
+//                break;
+//        }
+//    }
+//
+//    @Override
+//    public void keyReleased(KeyEvent e) {
+//
+//    }
 }
