@@ -1,5 +1,6 @@
 From [DevPost](https://devpost.com/software/sling-shot-orbit)
 
+
 # Inspiration
 Our goal was to create an interactive game/simulator where your input velocity calculates user's trajectory in relation to large masses in the frame.
 
@@ -17,3 +18,11 @@ Learning the GUI in a weekend! This was such an exciting experience and really p
 
 # What's next for Sling-Shot Orbit
 More inputs! More masses! Now that we have the GUI down, we can go forward with our original ambitious multi-mass system.
+
+## Preview
+
+
+![Screenshot (216)](https://github.com/sophia-kyr/PHYSHackthon2023/assets/92695138/746f91ee-29e4-405f-bc2d-e5e312094169)
+
+![Screenshot (220)](https://github.com/sophia-kyr/PHYSHackthon2023/assets/92695138/46056bf5-4b29-47be-827c-c4a56dd3fa65)
+
