@@ -1,5 +1,7 @@
 From [DevPost](https://devpost.com/software/sling-shot-orbit)
-
+# Running program
+To run project on your own and experiment with values, download the src folder and necessary images from 'images'. 
+Hint - try running with speed = 4, incident angle = 70 for an example of orbit.
 
 # Inspiration
 Our goal was to create an interactive game/simulator where your input velocity calculates user's trajectory in relation to large masses in the frame.
@@ -19,7 +21,7 @@ Learning the GUI in a weekend! This was such an exciting experience and really p
 # What's next for Sling-Shot Orbit
 More inputs! More masses! Now that we have the GUI down, we can go forward with our original ambitious multi-mass system.
 
-## Preview
+## Preview 
 
 
 ![Screenshot (216)](https://github.com/sophia-kyr/PHYSHackthon2023/assets/92695138/746f91ee-29e4-405f-bc2d-e5e312094169)
